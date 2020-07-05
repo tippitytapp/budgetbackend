@@ -1,7 +1,9 @@
 const router = require('express').Router()
 
 const Users = require('./usersmodel.js')
+const {verifyToken} = require('../auth/authmiddleware.js')
 
+router.use(verifyToken)
 router.get('/', (req, res) => {
     Users.getAll()
         .then(users => {

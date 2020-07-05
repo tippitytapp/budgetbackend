@@ -1,0 +1,65 @@
+
+exports.up = function(knex) {
+  return knex.schema.createTable('vendors', vendor => {
+        vendor.increments()
+        vendor.string('vendor')
+            .unique()
+  })
+  .createTable('transactions', trans => {
+        trans.increments()
+        trans.string('trans_type')
+            .notNullable()
+        trans.integer('vendor_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('vendors')
+            .onUpdate('CASCADE')
+            .onDelete('RESTRICT')
+        trans.string('description')
+        trans.decimal('amount')
+        trans.integer('user_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('users')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
+  })
+  .createTable('recurring', bills => {
+        bills.increments()
+        bills.string('bill')
+            .unique()
+        bills.integer('vendor_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('vendors')
+            .onUpdate('CASCADE')
+            .onDelete('RESTRICT')
+        bills.decimal('amount')
+            .notNullable()
+        bills.boolean('recurring')
+        bills.string('description')
+        bills.integer('user_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('users')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
+
+  })
+  .then(() => {
+      console.log('\n === Vendors Table Created === \n \n === Transactions Table Created === \n \n === Recurring Transactions Table Created === \n')
+  })
+};
+
+exports.down = function(knex) {
+  return knex.schema.dropTableIfExists('recurring')
+  .dropTableIfExists('transactions')
+  .dropTableIfExists('vendors')
+  .then(()=>{
+      console.log('\n === Recurring Tranactions Tables Dropped === \n \n === Transactions Table Dropped === \n \n === Vendors Table Dropped === \n')
+  })
+};
